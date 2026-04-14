@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Expert Rénovation</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1a1a1a;background:#f5f5f0}
+  .hidden{display:none!important}
+  input,select,textarea{width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit}
+  input:focus,select:focus,textarea:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,0.1)}
+  textarea{resize:vertical;min-height:80px}
+  .btn{padding:7px 14px;border:1px solid #ddd;border-radius:8px;font-size:12px;cursor:pointer;background:#fff;color:#1a1a1a;font-family:inherit;transition:background 0.15s,border-color 0.15s}
+  .btn:hover{background:#f5f5f0;border-color:#bbb}
+  .btn-primary{background:#185FA5;color:#fff;border-color:#185FA5}
+  .btn-primary:hover{background:#0C447C;border-color:#0C447C}
+  .btn-danger{background:#fff0f0;color:#a32d2d;border-color:#f09595}
+  .btn-danger:hover{background:#fde8e8}
+  .btn-sm{padding:4px 10px;font-size:11px}
+  .card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:12px 16px;margin-bottom:10px}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:500}
+  .tag-blue{background:#E6F1FB;color:#0C447C}
+  .tag-green{background:#EAF3DE;color:#27500A}
+  .tag-amber{background:#FAEEDA;color:#633806}
+  .tag-red{background:#FCEBEB;color:#791F1F}
+  .tag-purple{background:#EEEDFE;color:#3C3489}
+  .tag-teal{background:#E1F5EE;color:#085041}
+  .sidebar{width:210px;min-height:100vh;border-right:1px solid #e8e8e8;padding:14px;flex-shrink:0;background:#fafaf8;position:relative}
+  .main{flex:1;padding:20px;overflow:auto}
+  .nav-item{padding:8px 11px;border-radius:8px;font-size:12px;cursor:pointer;margin-bottom:3px;color:#666;transition:background 0.12s}
+  .nav-item:hover,.nav-item.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+  .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;flex-shrink:0;background:#E6F1FB;color:#0C447C}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .stat{background:#f5f5f0;border-radius:8px;padding:12px;text-align:center}
+  .stat-n{font-size:24px;font-weight:600;color:#1a1a1a}
+  .stat-l{font-size:11px;color:#888;margin-top:3px}
+  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);display:flex;align-items:flex-start;justify-content:center;z-index:1000;padding-top:60px;overflow-y:auto}
+  .modal{background:#fff;border-radius:12px;border:1px solid #e8e8e8;padding:22px;width:460px;max-width:96%;box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+  .table{width:100%;border-collapse:collapse;font-size:12px}
+  .table th{text-align:left;padding:8px 10px;border-bottom:1px solid #eee;color:#888;font-weight:500}
+  .table td{padding:8px 10px;border-bottom:1px solid #f0f0f0;color:#1a1a1a}
+  .table tr:last-child td{border-bottom:none}
+  .table tr:hover td{background:#fafaf8}
+  .tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid #eee}
+  .tab{padding:8px 16px;font-size:12px;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color 0.12s}
+  .tab:hover{color:#1a1a1a}
+  .tab.active{color:#185FA5;border-bottom-color:#185FA5;font-weight:500}
+  .file-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f5f5f0;border-radius:8px;margin-bottom:5px;font-size:12px}
+  .note-item{padding:10px 12px;background:#f5f5f0;border-radius:8px;margin-bottom:6px}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+  .cal-day{padding:6px 4px;text-align:center;font-size:12px;border-radius:6px;cursor:pointer;min-height:34px;position:relative;transition:background 0.1s}
+  .cal-day:hover{background:#f0f0ea}
+  .cal-day.today{background:#E6F1FB;color:#0C447C;font-weight:600}
+  .cal-day.has-event::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#185FA5}
+  .cal-hdr{text-align:center;font-size:10px;font-weight:600;color:#aaa;padding:4px;letter-spacing:0.03em}
+  .devis-line{display:grid;grid-template-columns:1fr 55px 80px 80px 28px;gap:6px;align-items:center;margin-bottom:6px}
+  .breadcrumb{font-size:11px;color:#888;margin-bottom:14px;display:flex;align-items:center;gap:5px}
+  .lbl{font-size:11px;color:#666;display:block;margin-bottom:5px;font-weight:500}
+  .frow{margin-bottom:12px}
+  .logo-box{width:32px;height:32px;background:#185FA5;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .section-title{font-size:17px;font-weight:600;margin-bottom:3px}
+  .section-sub{font-size:12px;color:#888;margin-bottom:16px}
+  code{font-size:11px;background:#f0f0ea;padding:2px 6px;border-radius:4px;font-family:monospace}
+  .ev-card{display:flex;align-items:center;gap:10px;padding:9px 12px}
+  hr-soft{border:none;border-top:1px solid #eee;margin:12px 0}
+  a{color:#185FA5;text-decoration:none}
+  @media(max-width:600px){
+    .sidebar{width:170px}
+    .grid4{grid-template-columns:1fr 1fr}
+    .grid2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div id="app" style="min-height:100vh;display:flex;flex-direction:column">
+
+<!-- LOGIN -->
+<div id="sc-login" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f5f5f0">
+  <div style="width:360px">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;background:#185FA5;border-radius:14px;margin-bottom:12px;box-shadow:0 4px 16px rgba(24,95,165,0.25)">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div style="font-size:20px;font-weight:700;color:#1a1a1a">CRM Expert Rénovation</div>
+      <div style="font-size:13px;color:#888;margin-top:4px">Accédez à votre espace de travail</div>
+    </div>
+    <div class="card" style="padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.07)">
+      <div class="frow"><label class="lbl">Identifiant</label><input id="li" type="text" value="admin" placeholder="Votre identifiant"></div>
+      <div class="frow"><label class="lbl">Mot de passe</label><input id="lp" type="password" value="admin123" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-primary" style="width:100%;padding:10px;font-size:13px;font-weight:500" onclick="doLogin()">Se connecter</button>
+      <div id="lerr" style="color:#a32d2d;font-size:12px;margin-top:8px;text-align:center;display:none">Identifiant ou mot de passe incorrect.</div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:#aaa;margin-top:10px">
+      admin / admin123 &nbsp;·&nbsp; agent01 / agent123 &nbsp;·&nbsp; agent02 / agent456
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="sc-admin" class="hidden" style="display:flex;min-height:100vh">
+  <div class="sidebar">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #eee">
+      <div class="logo-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+      <div><div style="font-size:12px;font-weight:600">Expert Rénovation</div><div style="font-size:10px;color:#888">Administrateur</div></div>
+    </div>
+    <div style="font-size:10px;color:#aaa;font-weight:600;letter-spacing:0.06em;margin-bottom:6px;padding-left:4px">NAVIGATION</div>
+    <div class="nav-item active" onclick="aN('dash',this)">📊 Tableau de bord</div>
+    <div class="nav-item" onclick="aN('agents',this)">👥 Agents</div>
+    <div class="nav-item" onclick="aN('clients',this)">🏠 Tous les clients</div>
+    <div class="nav-item" onclick="aN('agenda',this)">📅 Agenda global</div>
+    <div style="position:absolute;bottom:16px;left:14px;right:14px;border-top:1px solid #eee;padding-top:12px">
+      <div style="font-size:11px;color:#888;margin-bottom:8px;text-align:center">Connecté en tant qu'admin</div>
+      <button class="btn btn-sm" style="width:100%" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="main">
+    <div id="ad-dash">
+      <div class="section-title">Tableau de bord</div>
+      <div class="section-sub">Vue d'ensemble du CRM</div>
+      <div class="grid4" style="margin-bottom:20px">
+        <div class="stat"><div class="stat-n" id="s-ag">2</div><div class="stat-l">Agents actifs</div></div>
+        <div class="stat"><div class="stat-n" id="s-cl">4</div><div class="stat-l">Clients total</div></div>
+        <div class="stat"><div class="stat-n" id="s-do">7</div><div class="stat-l">Documents</div></div>
+        <div class="stat"><div class="stat-n" id="s-dv">2</div><div class="stat-l">Devis créés</div></div>
+      </div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:10px">Activité récente</div>
+      <div id="ad-act"></div>
+    </div>
+    <div id="ad-agents" class="hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div><div class="section-title">Agents</div><div class="section-sub" style="margin-bottom:0">Gérer les accès agents</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showM('m-ag')">+ Nouvel agent</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="table">
+          <thead><tr><th>Agent</th><th>Identifiant</th><th>Clients</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody id="ag-tb"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="ad-clients" class="hidden">
+      <div class="section-title">Tous les clients</div>
+      <div class="section-sub">Vue globale de tous les portefeuilles</div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="table">
+          <thead><tr><th>Client</th><th>Agent responsable</th><th>Type de travaux</th><th>Statut</th><th>Docs</th><th>Devis</th></tr></thead>
+          <tbody id="ac-tb"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="ad-agenda" class="hidden">
+      <div class="section-title">Agenda global</div>
+      <div class="section-sub">Tous les événements de tous les agents</div>
+      <div id="ag-cal-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENT -->
+<div id="sc-agent" class="hidden" style="display:flex;min-height:100vh">
+  <div class="sidebar">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #eee">
+      <div class="avatar" id="ag-av" style="width:36px;height:36px;font-size:14px">A</div>
+      <div><div style="font-size:12px;font-weight:600" id="ag-nm">Agent</div><div style="font-size:10px;color:#888">Commercial</div></div>
+    </div>
+    <div style="font-size:10px;color:#aaa;font-weight:600;letter-spacing:0.06em;margin-bottom:6px;padding-left:4px">NAVIGATION</div>
+    <div class="nav-item active" onclick="agN('dash',this)">📊 Tableau de bord</div>
+    <div class="nav-item" onclick="agN('clients',this)">🏠 Mes clients</div>
+    <div class="nav-item" onclick="agN('agenda',this)">📅 Mon agenda</div>
+    <div style="position:absolute;bottom:16px;left:14px;right:14px;border-top:1px solid #eee;padding-top:12px">
+      <div style="font-size:11px;color:#888;margin-bottom:8px;text-align:center" id="ag-login-display"></div>
+      <button class="btn btn-sm" style="width:100%" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="main">
+    <div id="ag-dash">
+      <div class="section-title" id="ag-welcome">Mon espace</div>
+      <div class="section-sub">Résumé de votre activité</div>
+      <div class="grid4" style="margin-bottom:20px">
+        <div class="stat"><div class="stat-n" id="ag-sc">0</div><div class="stat-l">Mes clients</div></div>
+        <div class="stat"><div class="stat-n" id="ag-sd">0</div><div class="stat-l">Documents</div></div>
+        <div class="stat"><div class="stat-n" id="ag-sdv">0</div><div class="stat-l">Devis</div></div>
+        <div class="stat"><div class="stat-n" id="ag-sev">0</div><div class="stat-l">Événements</div></div>
+      </div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:10px">Prochains rendez-vous</div>
+      <div id="ag-next-events" style="margin-bottom:20px"></div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:10px">Clients récents</div>
+      <div id="ag-rc"></div>
+    </div>
+    <div id="ag-clients" class="hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div><div class="section-title">Mes clients</div><div class="section-sub" style="margin-bottom:0" id="ag-cc"></div></div>
+        <button class="btn btn-primary btn-sm" onclick="showM('m-cl')">+ Nouveau client</button>
+      </div>
+      <div id="ag-cl-list"></div>
+    </div>
+    <div id="ag-detail" class="hidden">
+      <div class="breadcrumb">
+        <span style="cursor:pointer;color:#185FA5" onclick="agN('clients',document.querySelector('#sc-agent .nav-item:nth-child(2)'))">Mes clients</span>
+        <span style="opacity:0.4">›</span>
+        <span id="bc-name">Client</span>
+      </div>
+      <div id="detail-wrap"></div>
+    </div>
+    <div id="ag-agenda" class="hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div><div class="section-title">Mon agenda</div><div class="section-sub" style="margin-bottom:0">Gérez vos rendez-vous et visites</div></div>
+        <button class="btn btn-primary btn-sm" onclick="showM('m-ev')">+ Événement</button>
+      </div>
+      <div id="ag-cal-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="m-ag" class="hidden modal-overlay" onclick="if(event.target===this)hideM('m-ag')">
+  <div class="modal">
+    <div style="font-size:15px;font-weight:600;margin-bottom:18px">Créer un agent</div>
+    <div class="frow"><label class="lbl">Nom complet</label><input id="na-n" type="text" placeholder="Jean Dupont"></div>
+    <div class="frow"><label class="lbl">Identifiant de connexion</label><input id="na-i" type="text" placeholder="agent03"></div>
+    <div class="frow"><label class="lbl">Mot de passe</label><input id="na-p" type="password" placeholder="••••••••"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-sm" onclick="hideM('m-ag')">Annuler</button>
+      <button class="btn btn-primary btn-sm" onclick="createAgent()">Créer l'agent</button>
+    </div>
+  </div>
+</div>
+
+<div id="m-cl" class="hidden modal-overlay" onclick="if(event.target===this)hideM('m-cl')">
+  <div class="modal">
+    <div style="font-size:15px;font-weight:600;margin-bottom:18px">Nouveau client</div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div><label class="lbl">Prénom</label><input id="nc-f" type="text" placeholder="Marie"></div>
+      <div><label class="lbl">Nom</label><input id="nc-l" type="text" placeholder="Martin"></div>
+    </div>
+    <div class="frow"><label class="lbl">Téléphone</label><input id="nc-t" type="text" placeholder="06 12 34 56 78"></div>
+    <div class="frow"><label class="lbl">Email</label><input id="nc-e" type="email" placeholder="marie@email.fr"></div>
+    <div class="frow"><label class="lbl">Adresse du chantier</label><input id="nc-a" type="text" placeholder="12 rue des Lilas, 75001 Paris"></div>
+    <div class="frow"><label class="lbl">Type de travaux</label>
+      <select id="nc-ty"><option>Rénovation complète</option><option>Cuisine</option><option>Salle de bain</option><option>Isolation</option><option>Toiture</option><option>Électricité</option><option>Plomberie</option><option>Autre</option></select>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-sm" onclick="hideM('m-cl')">Annuler</button>
+      <button class="btn btn-primary btn-sm" onclick="createClient()">Créer le client</button>
+    </div>
+  </div>
+</div>
+
+<div id="m-up" class="hidden modal-overlay" onclick="if(event.target===this)hideM('m-up')">
+  <div class="modal">
+    <div style="font-size:15px;font-weight:600;margin-bottom:18px">Ajouter un fichier</div>
+    <div class="frow"><label class="lbl">Nom du fichier</label><input id="up-n" type="text" placeholder="Devis cuisine.pdf"></div>
+    <div class="frow"><label class="lbl">Type de fichier</label>
+      <select id="up-t"><option value="pdf">Document PDF</option><option value="img">Photo</option><option value="doc">Word / Excel</option><option value="other">Autre</option></select>
+    </div>
+    <div style="border:2px dashed #ddd;border-radius:10px;padding:24px;text-align:center;font-size:12px;color:#888;cursor:pointer;margin-bottom:14px;transition:background 0.12s" onclick="document.getElementById('up-n').value=document.getElementById('up-n').value||'Nouveau fichier.pdf'" onmouseover="this.style.background='#fafaf8'" onmouseout="this.style.background=''">
+      <div style="font-size:28px;margin-bottom:8px">📂</div>
+      <div style="font-weight:500;color:#555">Cliquez pour sélectionner un fichier</div>
+      <div style="margin-top:4px">PDF, images, documents — 20 Mo max</div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-sm" onclick="hideM('m-up')">Annuler</button>
+      <button class="btn btn-primary btn-sm" onclick="addFile()">Ajouter le fichier</button>
+    </div>
+  </div>
+</div>
+
+<div id="m-note" class="hidden modal-overlay" onclick="if(event.target===this)hideM('m-note')">
+  <div class="modal">
+    <div style="font-size:15px;font-weight:600;margin-bottom:18px">Ajouter une note</div>
+    <div class="frow"><label class="lbl">Titre de la note</label><input id="no-t" type="text" placeholder="Note de visite client..."></div>
+    <div class="frow"><label class="lbl">Contenu</label><textarea id="no-c" placeholder="Détails de la note..." rows="5"></textarea></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-sm" onclick="hideM('m-note')">Annuler</button>
+      <button class="btn btn-primary btn-sm" onclick="addNote()">Enregistrer la note</button>
+    </div>
+  </div>
+</div>
+
+<div id="m-ev" class="hidden modal-overlay" onclick="if(event.target===this)hideM('m-ev')">
+  <div class="modal">
+    <div style="font-size:15px;font-weight:600;margin-bottom:18px">Nouvel événement</div>
+    <div class="frow"><label class="lbl">Titre</label><input id="ev-t" type="text" placeholder="Visite chantier Marie Martin"></div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div><label class="lbl">Date</label><input id="ev-d" type="date"></div>
+      <div><label class="lbl">Heure</label><input id="ev-h" type="time" value="09:00"></div>
+    </div>
+    <div class="frow"><label class="lbl">Client associé</label><select id="ev-cl"><option value="">— Aucun —</option></select></div>
+    <div class="frow"><label class="lbl">Type d'événement</label>
+      <select id="ev-ty"><option value="rdv">Rendez-vous</option><option value="visite">Visite chantier</option><option value="appel">Appel téléphonique</option><option value="relance">Relance</option><option value="livraison">Livraison</option></select>
+    </div>
+    <div class="frow"><label class="lbl">Notes / Détails</label><textarea id="ev-n" placeholder="Détails supplémentaires..." rows="2"></textarea></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-sm" onclick="hideM('m-ev')">Annuler</button>
+      <button class="btn btn-primary btn-sm" onclick="addEvent()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div id="m-dv" class="hidden modal-overlay" onclick="if(event.target===this)hideM('m-dv')">
+  <div class="modal" style="width:520px">
+    <div style="font-size:15px;font-weight:600;margin-bottom:18px">Nouveau devis</div>
+    <div class="frow"><label class="lbl">Titre du devis</label><input id="dv-t" type="text" placeholder="Devis rénovation cuisine"></div>
+    <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#555">Lignes du devis</div>
+    <div style="display:grid;grid-template-columns:1fr 55px 85px 85px 28px;gap:6px;margin-bottom:6px;padding:0 4px">
+      <div style="font-size:10px;color:#aaa;font-weight:600">DESCRIPTION</div>
+      <div style="font-size:10px;color:#aaa;font-weight:600;text-align:center">QTÉ</div>
+      <div style="font-size:10px;color:#aaa;font-weight:600;text-align:right">PRIX UNIT.</div>
+      <div style="font-size:10px;color:#aaa;font-weight:600;text-align:right">TOTAL</div>
+      <div></div>
+    </div>
+    <div id="dv-lines"></div>
+    <button class="btn btn-sm" style="margin-bottom:14px;margin-top:6px" onclick="addDvLine()">+ Ajouter une ligne</button>
+    <div style="text-align:right;font-size:14px;font-weight:600;margin-bottom:14px;padding-top:8px;border-top:1px solid #eee">Total HT : <span id="dv-total" style="color:#185FA5">0,00 €</span></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-sm" onclick="hideM('m-dv')">Annuler</button>
+      <button class="btn btn-primary btn-sm" onclick="saveDevis()">Enregistrer le devis</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var DB={
+  users:[
+    {id:'admin',pw:'admin123',role:'admin',name:'Administrateur'},
+    {id:'agent01',pw:'agent123',role:'agent',name:'Sophie Lambert'},
+    {id:'agent02',pw:'agent456',role:'agent',name:'Thomas Bernard'}
+  ],
+  agents:[
+    {id:'agent01',name:'Sophie Lambert',login:'agent01',active:true},
+    {id:'agent02',name:'Thomas Bernard',login:'agent02',active:true}
+  ],
+  clients:[
+    {id:'c1',agentId:'agent01',first:'Marie',last:'Martin',tel:'06 12 34 56 78',email:'marie.martin@email.fr',addr:'12 rue des Lilas, 75001 Paris',type:'Cuisine',status:'En cours',
+      files:[{name:'Devis cuisine.pdf',type:'pdf',date:'10/04/2026'},{name:'Photo avant travaux.jpg',type:'img',date:'10/04/2026'}],
+      notes:[{title:'Visite initiale',content:'Cliente souhaite un îlot central et un plan ouvert. Budget estimé ~18 000 €. Préfère finitions blanc mat.',date:'10/04/2026'}],
+      devis:[{id:'dv1',title:'Devis cuisine complète',date:'11/04/2026',status:'Envoyé',lines:[{desc:'Pose meubles hauts x6',qty:6,pu:180},{desc:'Plan de travail granit 3m',qty:1,pu:1200},{desc:'Électroménager encastré',qty:1,pu:2400},{desc:'Main d\'œuvre pose',qty:1,pu:2800}]}]
+    },
+    {id:'c2',agentId:'agent01',first:'Pierre',last:'Durand',tel:'07 98 76 54 32',email:'p.durand@email.fr',addr:'5 av. Victor Hugo, 69001 Lyon',type:'Salle de bain',status:'Signé',
+      files:[{name:'Contrat signé.pdf',type:'pdf',date:'08/04/2026'}],
+      notes:[{title:'Accord commercial',content:'Accord sur carrelage rectifié 60x60 gris anthracite. Début des travaux le 20/04.',date:'07/04/2026'}],
+      devis:[{id:'dv2',title:'Devis salle de bain',date:'05/04/2026',status:'Accepté',lines:[{desc:'Carrelage sol 60x60 (8m²)',qty:8,pu:45},{desc:'Faïence mur (12m²)',qty:12,pu:35},{desc:'Sanitaires',qty:1,pu:1200},{desc:'Main d\'œuvre',qty:1,pu:1800}]}]
+    },
+    {id:'c3',agentId:'agent02',first:'Lucie',last:'Moreau',tel:'06 45 67 89 01',email:'lucie.m@email.fr',addr:'8 bd Haussmann, 75009 Paris',type:'Isolation',status:'Prospect',
+      files:[{name:'Diagnostic isolation.pdf',type:'pdf',date:'12/04/2026'},{name:'Photo façade.jpg',type:'img',date:'12/04/2026'}],
+      notes:[],devis:[]
+    },
+    {id:'c4',agentId:'agent02',first:'Henri',last:'Petit',tel:'06 22 33 44 55',email:'henri.p@email.fr',addr:'20 rue Nationale, 59000 Lille',type:'Toiture',status:'En cours',
+      files:[{name:'Photo toiture 1.jpg',type:'img',date:'11/04/2026'},{name:'Rapport inspection.pdf',type:'pdf',date:'11/04/2026'}],
+      notes:[{title:'Point chantier #1',content:'Tuiles à remplacer sur la zone nord (environ 40 unités). Livraison matériaux prévue semaine du 20/04. RAS sur charpente.',date:'11/04/2026'}],
+      devis:[]
+    }
+  ],
+  events:[
+    {id:'e1',agentId:'agent01',title:'Visite chantier Marie Martin',date:'2026-04-15',time:'09:00',type:'visite',clientId:'c1',notes:'Vérifier avancement cuisine, contrôle coffrage îlot'},
+    {id:'e2',agentId:'agent01',title:'Appel Pierre Durand',date:'2026-04-14',time:'14:00',type:'appel',clientId:'c2',notes:'Confirmation date livraison carrelage'},
+    {id:'e3',agentId:'agent02',title:'RDV Lucie Moreau',date:'2026-04-16',time:'10:30',type:'rdv',clientId:'c3',notes:'Présentation devis isolation thermique'},
+    {id:'e4',agentId:'agent02',title:'Suivi chantier Henri Petit',date:'2026-04-17',time:'08:00',type:'visite',clientId:'c4',notes:'Contrôle livraison tuiles'},
+    {id:'e5',agentId:'agent01',title:'Relance prospect',date:'2026-04-22',time:'11:00',type:'relance',clientId:'',notes:''}
+  ],
+  activity:[
+    {text:'Sophie Lambert a ajouté une cliente : Marie Martin',date:'10/04/2026'},
+    {text:'Thomas Bernard a créé : Lucie Moreau (prospect)',date:'12/04/2026'},
+    {text:'Sophie Lambert — Devis cuisine envoyé à Marie Martin',date:'11/04/2026'},
+    {text:'Sophie Lambert — Contrat signé : Pierre Durand',date:'08/04/2026'}
+  ]
+};
+
+var CU=null, curClient=null, dvLineId=0;
+
+function doLogin(){
+  var id=document.getElementById('li').value.trim(),pw=document.getElementById('lp').value.trim();
+  var u=DB.users.find(function(x){return x.id===id&&x.pw===pw});
+  if(!u){document.getElementById('lerr').style.display='block';return}
+  document.getElementById('lerr').style.display='none';
+  CU=u;
+  document.getElementById('sc-login').style.display='none';
+  if(u.role==='admin'){document.getElementById('sc-admin').style.display='flex';renderAdminDash()}
+  else{
+    document.getElementById('sc-agent').style.display='flex';
+    document.getElementById('ag-nm').textContent=u.name;
+    document.getElementById('ag-av').textContent=u.name.charAt(0);
+    document.getElementById('ag-login-display').textContent=u.id;
+    renderAgDash();
+  }
+}
+
+function logout(){
+  CU=null;curClient=null;
+  document.getElementById('sc-admin').style.display='none';
+  document.getElementById('sc-agent').style.display='none';
+  document.getElementById('sc-login').style.display='flex';
+  document.getElementById('li').value='admin';document.getElementById('lp').value='admin123';
+}
+
+function aN(s,el){
+  document.querySelectorAll('#sc-admin .nav-item').forEach(function(n){n.classList.remove('active')});
+  if(el)el.classList.add('active');
+  ['ad-dash','ad-agents','ad-clients','ad-agenda'].forEach(function(x){document.getElementById(x).classList.add('hidden')});
+  if(s==='dash'){document.getElementById('ad-dash').classList.remove('hidden');renderAdminDash()}
+  else if(s==='agents'){document.getElementById('ad-agents').classList.remove('hidden');renderAgTable()}
+  else if(s==='clients'){document.getElementById('ad-clients').classList.remove('hidden');renderAllClients()}
+  else if(s==='agenda'){document.getElementById('ad-agenda').classList.remove('hidden');renderCal('ag-cal-wrap',null,true)}
+}
+
+function agN(s,el){
+  document.querySelectorAll('#sc-agent .nav-item').forEach(function(n){n.classList.remove('active')});
+  if(el)el.classList.add('active');
+  ['ag-dash','ag-clients','ag-detail','ag-agenda'].forEach(function(x){document.getElementById(x).classList.add('hidden')});
+  if(s==='dash'){document.getElementById('ag-dash').classList.remove('hidden');renderAgDash()}
+  else if(s==='clients'){document.getElementById('ag-clients').classList.remove('hidden');renderAgClients()}
+  else if(s==='detail'){document.getElementById('ag-detail').classList.remove('hidden')}
+  else if(s==='agenda'){document.getElementById('ag-agenda').classList.remove('hidden');renderCal('ag-cal-wrap',CU.id,false)}
+}
+
+function renderAdminDash(){
+  document.getElementById('s-ag').textContent=DB.agents.filter(function(a){return a.active}).length;
+  document.getElementById('s-cl').textContent=DB.clients.length;
+  document.getElementById('s-do').textContent=DB.clients.reduce(function(s,c){return s+c.files.length},0);
+  document.getElementById('s-dv').textContent=DB.clients.reduce(function(s,c){return s+c.devis.length},0);
+  document.getElementById('ad-act').innerHTML=DB.activity.map(function(a){
+    return '<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px 14px"><div style="width:7px;height:7px;border-radius:50%;background:#185FA5;flex-shrink:0"></div><div style="flex:1;font-size:12px">'+a.text+'</div><div style="font-size:11px;color:#888">'+a.date+'</div></div>'
+  }).join('');
+}
+
+function renderAgTable(){
+  document.getElementById('ag-tb').innerHTML=DB.agents.map(function(a){
+    var cnt=DB.clients.filter(function(c){return c.agentId===a.id}).length;
+    return '<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:28px;height:28px;font-size:11px">'+a.name.charAt(0)+'</div><strong>'+a.name+'</strong></div></td><td><code>'+a.login+'</code></td><td>'+cnt+'</td><td><span class="tag tag-green">Actif</span></td><td><button class="btn btn-danger btn-sm">Désactiver</button></td></tr>'
+  }).join('');
+}
+
+function renderAllClients(){
+  document.getElementById('ac-tb').innerHTML=DB.clients.map(function(c){
+    var ag=DB.agents.find(function(a){return a.id===c.agentId});
+    var sc=c.status==='Signé'?'tag-green':c.status==='En cours'?'tag-blue':c.status==='Terminé'?'tag-purple':'tag-amber';
+    return '<tr><td><strong>'+c.first+' '+c.last+'</strong><br><span style="font-size:11px;color:#888">'+c.addr+'</span></td><td>'+(ag?ag.name:'—')+'</td><td>'+c.type+'</td><td><span class="tag '+sc+'">'+c.status+'</span></td><td>'+c.files.length+'</td><td>'+c.devis.length+'</td></tr>'
+  }).join('');
+}
+
+function renderAgDash(){
+  var mc=DB.clients.filter(function(c){return c.agentId===CU.id});
+  var me=DB.events.filter(function(e){return e.agentId===CU.id});
+  document.getElementById('ag-welcome').textContent='Bonjour, '+CU.name.split(' ')[0]+' !';
+  document.getElementById('ag-sc').textContent=mc.length;
+  document.getElementById('ag-sd').textContent=mc.reduce(function(s,c){return s+c.files.length},0);
+  document.getElementById('ag-sdv').textContent=mc.reduce(function(s,c){return s+c.devis.length},0);
+  document.getElementById('ag-sev').textContent=me.length;
+  var upcoming=me.filter(function(e){return e.date>='2026-04-13'}).sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)}).slice(0,3);
+  document.getElementById('ag-next-events').innerHTML=upcoming.map(function(e){
+    var tc=evTypeColor(e.type);
+    var cl=DB.clients.find(function(c){return c.id===e.clientId});
+    return '<div class="card ev-card"><div style="width:48px;text-align:center;flex-shrink:0;border-right:1px solid #eee;padding-right:10px;margin-right:2px"><div style="font-size:10px;color:#888">'+fmtDate(e.date)+'</div><div style="font-size:13px;font-weight:600">'+e.time+'</div></div><div style="flex:1;padding-left:4px"><div style="font-weight:600;font-size:13px">'+e.title+'</div>'+(cl?'<div style="font-size:11px;color:#888">👤 '+cl.first+' '+cl.last+'</div>':'')+(e.notes?'<div style="font-size:11px;color:#aaa">'+e.notes+'</div>':'')+'</div><span class="tag '+tc+'">'+evTypeLabel(e.type)+'</span></div>'
+  }).join('')||'<div style="font-size:12px;color:#aaa;padding:8px 0">Aucun événement à venir.</div>';
+  document.getElementById('ag-rc').innerHTML=mc.slice(0,3).map(function(c){
+    var sc=c.status==='Signé'?'tag-green':c.status==='En cours'?'tag-blue':c.status==='Terminé'?'tag-purple':'tag-amber';
+    return '<div class="card" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px" onclick="openClient(\''+c.id+'\')"><div class="avatar">'+c.first.charAt(0)+c.last.charAt(0)+'</div><div style="flex:1"><div style="font-weight:600;font-size:13px">'+c.first+' '+c.last+'</div><div style="font-size:11px;color:#888">'+c.type+' &middot; '+c.addr+'</div></div><span class="tag '+sc+'">'+c.status+'</span></div>'
+  }).join('');
+}
+
+function renderAgClients(){
+  var mc=DB.clients.filter(function(c){return c.agentId===CU.id});
+  document.getElementById('ag-cc').textContent=mc.length+' client(s) dans votre portefeuille';
+  document.getElementById('ag-cl-list').innerHTML=mc.map(function(c){
+    var sc=c.status==='Signé'?'tag-green':c.status==='En cours'?'tag-blue':c.status==='Terminé'?'tag-purple':'tag-amber';
+    return '<div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 16px" onclick="openClient(\''+c.id+'\')"><div class="avatar" style="width:40px;height:40px;font-size:14px">'+c.first.charAt(0)+c.last.charAt(0)+'</div><div style="flex:1"><div style="font-weight:600;font-size:14px">'+c.first+' '+c.last+'</div><div style="font-size:12px;color:#888;margin-top:2px">📞 '+c.tel+' &nbsp;✉ '+c.email+'</div><div style="font-size:12px;color:#888">📍 '+c.addr+'</div></div><div style="text-align:right;flex-shrink:0"><span class="tag '+sc+'">'+c.status+'</span><div style="font-size:11px;color:#aaa;margin-top:4px">'+c.files.length+' doc(s) · '+c.devis.length+' devis</div></div></div>'
+  }).join('')||'<div style="font-size:13px;color:#aaa;padding:16px 0">Aucun client pour le moment.</div>';
+}
+
+function openClient(id){
+  curClient=id;
+  var c=DB.clients.find(function(x){return x.id===id});
+  document.getElementById('bc-name').textContent=c.first+' '+c.last;
+  renderDetail(c,'docs');
+  agN('detail',null);
+}
+
+function renderDetail(c,tab){
+  var sc=c.status==='Signé'?'tag-green':c.status==='En cours'?'tag-blue':c.status==='Terminé'?'tag-purple':'tag-amber';
+  var tabs=[['docs','📄 Documents'],['notes','📝 Notes'],['devis','💰 Devis']];
+  var tabHtml=tabs.map(function(t){return '<div class="tab'+(t[0]===tab?' active':'')+'" onclick="renderDetail(DB.clients.find(function(x){return x.id===\''+c.id+'\'}),\''+t[0]+'\')">'+t[1]+'</div>'}).join('');
+
+  var bodyHtml='';
+  if(tab==='docs'){
+    var fh=c.files.map(function(f){
+      var label=f.type==='pdf'?'PDF':f.type==='img'?'IMG':'DOC';
+      var bg=f.type==='pdf'?'#FAEEDA':f.type==='img'?'#E1F5EE':'#E6F1FB';
+      var tc=f.type==='pdf'?'#633806':f.type==='img'?'#085041':'#0C447C';
+      return '<div class="file-item"><div style="width:34px;height:34px;border-radius:7px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+tc+';flex-shrink:0">'+label+'</div><div style="flex:1"><div style="font-weight:500">'+f.name+'</div><div style="font-size:11px;color:#888">Ajouté le '+f.date+'</div></div><button class="btn btn-danger btn-sm" onclick="rmFile(\''+c.id+'\',\''+f.name+'\')">Supprimer</button></div>'
+    }).join('');
+    bodyHtml='<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-primary btn-sm" onclick="showM(\'m-up\')">+ Ajouter un fichier</button></div>'+(fh||'<div style="font-size:12px;color:#aaa;padding:12px 0">Aucun fichier pour ce client.</div>');
+  } else if(tab==='notes'){
+    var nh=c.notes.map(function(n,i){
+      return '<div class="note-item"><div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px"><div style="font-weight:600;font-size:13px">'+n.title+'</div><div style="display:flex;align-items:center;gap:8px"><div style="font-size:11px;color:#aaa">'+n.date+'</div><button class="btn btn-danger btn-sm" onclick="rmNote(\''+c.id+'\','+i+')">Supprimer</button></div></div><div style="font-size:12px;color:#555;line-height:1.6">'+n.content+'</div></div>'
+    }).join('');
+    bodyHtml='<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-primary btn-sm" onclick="showM(\'m-note\')">+ Ajouter une note</button></div>'+(nh||'<div style="font-size:12px;color:#aaa;padding:12px 0">Aucune note pour ce client.</div>');
+  } else if(tab==='devis'){
+    var dh=c.devis.map(function(d){
+      var total=d.lines.reduce(function(s,l){return s+l.qty*l.pu},0);
+      var ds=d.status==='Accepté'?'tag-green':d.status==='Envoyé'?'tag-blue':d.status==='Refusé'?'tag-red':'tag-amber';
+      var lh=d.lines.map(function(l){return '<div style="display:grid;grid-template-columns:1fr 45px 75px 80px;gap:4px;font-size:12px;padding:5px 0;border-bottom:1px solid #f5f5f0"><span>'+l.desc+'</span><span style="text-align:center;color:#888">'+l.qty+'</span><span style="text-align:right;color:#888">'+l.pu.toLocaleString('fr-FR')+'€</span><span style="text-align:right;font-weight:600">'+(l.qty*l.pu).toLocaleString('fr-FR')+'€</span></div>'}).join('');
+      return '<div class="card" style="padding:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div><div style="font-weight:600;font-size:14px">'+d.title+'</div><div style="font-size:11px;color:#888">Créé le '+d.date+'</div></div><div style="display:flex;align-items:center;gap:8px"><span class="tag '+ds+'">'+d.status+'</span><select onchange="changeDvStatus(\''+c.id+'\',\''+d.id+'\',this.value)" style="width:auto;font-size:11px;padding:4px 8px"><option'+(d.status==='Brouillon'?' selected':'')+'>Brouillon</option><option'+(d.status==='Envoyé'?' selected':'')+'>Envoyé</option><option'+(d.status==='Accepté'?' selected':'')+'>Accepté</option><option'+(d.status==='Refusé'?' selected':'')+'>Refusé</option></select></div></div><div style="font-size:10px;color:#aaa;display:grid;grid-template-columns:1fr 45px 75px 80px;gap:4px;padding-bottom:5px;border-bottom:1px solid #eee;margin-bottom:2px;font-weight:600;letter-spacing:0.03em"><span>DESCRIPTION</span><span style="text-align:center">QTÉ</span><span style="text-align:right">P.U.</span><span style="text-align:right">TOTAL</span></div>'+lh+'<div style="text-align:right;font-size:13px;font-weight:700;margin-top:10px;padding-top:8px;border-top:1px solid #eee;color:#185FA5">Total HT : '+total.toLocaleString('fr-FR')+'€</div></div>'
+    }).join('');
+    bodyHtml='<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-primary btn-sm" onclick="showM(\'m-dv\')">+ Nouveau devis</button></div>'+(dh||'<div style="font-size:12px;color:#aaa;padding:12px 0">Aucun devis pour ce client.</div>');
+  }
+
+  document.getElementById('detail-wrap').innerHTML=
+    '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">'
+    +'<div><div style="font-size:20px;font-weight:700">'+c.first+' '+c.last+'</div><div style="font-size:12px;color:#888;margin-top:3px">'+c.type+' &middot; '+c.addr+'</div></div>'
+    +'<select onchange="chStatus(\''+c.id+'\',this.value)" style="width:auto;padding:6px 10px;font-size:12px"><option'+(c.status==='Prospect'?' selected':'')+'>Prospect</option><option'+(c.status==='En cours'?' selected':'')+'>En cours</option><option'+(c.status==='Signé'?' selected':'')+'>Signé</option><option'+(c.status==='Terminé'?' selected':'')+'>Terminé</option></select>'
+    +'</div>'
+    +'<div class="grid2" style="margin-bottom:16px">'
+    +'<div class="card" style="padding:12px"><div style="font-size:10px;color:#aaa;font-weight:600;margin-bottom:8px">COORDONNÉES</div><div style="font-size:12px;margin-bottom:4px">📞 '+c.tel+'</div><div style="font-size:12px;margin-bottom:4px">✉ '+c.email+'</div><div style="font-size:12px">📍 '+c.addr+'</div></div>'
+    +'<div class="card" style="padding:12px"><div style="font-size:10px;color:#aaa;font-weight:600;margin-bottom:8px">INFORMATIONS</div><div style="font-size:12px;margin-bottom:4px">🔧 Type : '+c.type+'</div><div style="font-size:12px">📋 Statut : <span class="tag '+sc+'">'+c.status+'</span></div></div>'
+    +'</div>'
+    +'<div class="tabs">'+tabHtml+'</div>'+bodyHtml;
+}
+
+function renderCal(wrId,agentId,isAdmin){
+  var y=2026,m=3;
+  var mNames=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  var dNames=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  var firstDay=new Date(y,m,1).getDay();
+  var daysInMonth=new Date(y,m+1,0).getDate();
+  var events=isAdmin?DB.events:DB.events.filter(function(e){return e.agentId===agentId});
+  var startOffset=(firstDay+6)%7;
+
+  var cells='';
+  for(var i=0;i<startOffset;i++)cells+='<div></div>';
+  for(var d=1;d<=daysInMonth;d++){
+    var ds=y+'-'+(m+1<10?'0':'')+(m+1)+'-'+(d<10?'0':'')+d;
+    var de=events.filter(function(e){return e.date===ds});
+    cells+='<div class="cal-day'+(d===13?' today':'')+(de.length?' has-event':'')+'" onclick="showDayEventsAlert(\''+ds+'\','+isAdmin+')" title="'+de.map(function(e){return e.time+' '+e.title}).join('&#10;')+'">'+d+'</div>';
+  }
+
+  var upArr=events.filter(function(e){return e.date>='2026-04-13'}).sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)});
+  var evList=upArr.map(function(e){
+    var tc=evTypeColor(e.type);
+    var cl=DB.clients.find(function(c){return c.id===e.clientId});
+    var ag=isAdmin?DB.agents.find(function(a){return a.id===e.agentId}):null;
+    return '<div class="card ev-card"><div style="width:52px;text-align:center;flex-shrink:0;border-right:1px solid #eee;padding-right:10px"><div style="font-size:10px;color:#888">'+fmtDate(e.date)+'</div><div style="font-size:13px;font-weight:700">'+e.time+'</div></div><div style="flex:1;padding-left:6px"><div style="font-weight:600;font-size:13px">'+e.title+'</div><div style="font-size:11px;color:#888">'+(cl?'👤 '+cl.first+' '+cl.last:'')+' '+(ag?'&nbsp;· 👤 '+ag.name:'')+'</div>'+(e.notes?'<div style="font-size:11px;color:#aaa;margin-top:2px">'+e.notes+'</div>':'')+'</div><span class="tag '+tc+'">'+evTypeLabel(e.type)+'</span></div>'
+  }).join('')||'<div style="font-size:12px;color:#aaa;padding:10px 0">Aucun événement à venir.</div>';
+
+  document.getElementById(wrId).innerHTML=
+    '<div class="card" style="padding:16px">'
+    +'<div style="font-size:15px;font-weight:600;margin-bottom:12px">'+mNames[m]+' '+y+'</div>'
+    +'<div class="cal-grid">'+dNames.map(function(d){return '<div class="cal-hdr">'+d+'</div>'}).join('')+cells+'</div>'
+    +'</div>'
+    +'<div style="font-size:14px;font-weight:600;margin:16px 0 10px">Événements à venir</div>'+evList;
+}
+
+function showDayEventsAlert(dateStr,isAdmin){
+  var evs=isAdmin?DB.events.filter(function(e){return e.date===dateStr}):DB.events.filter(function(e){return e.date===dateStr&&e.agentId===CU.id});
+  if(!evs.length)return;
+  alert('📅 '+dateStr+'\n\n'+evs.map(function(e){return '⏰ '+e.time+' — '+e.title+(e.notes?'\n   '+e.notes:'')}).join('\n\n'));
+}
+
+function chStatus(cid,val){
+  var c=DB.clients.find(function(x){return x.id===cid});
+  if(c){c.status=val;renderDetail(c,getActiveTab())}
+}
+
+function changeDvStatus(cid,dvid,val){
+  var c=DB.clients.find(function(x){return x.id===cid});
+  if(c){var d=c.devis.find(function(x){return x.id===dvid});if(d){d.status=val;renderDetail(c,'devis')}}
+}
+
+function getActiveTab(){
+  var t=document.querySelector('#detail-wrap .tab.active');
+  if(!t)return 'docs';
+  var txt=t.textContent;
+  return txt.indexOf('Notes')>-1?'notes':txt.indexOf('Devis')>-1?'devis':'docs';
+}
+
+function rmFile(cid,fname){
+  var c=DB.clients.find(function(x){return x.id===cid});
+  if(c){c.files=c.files.filter(function(f){return f.name!==fname});renderDetail(c,'docs')}
+}
+
+function rmNote(cid,idx){
+  var c=DB.clients.find(function(x){return x.id===cid});
+  if(c){c.notes.splice(idx,1);renderDetail(c,'notes')}
+}
+
+function addFile(){
+  var n=document.getElementById('up-n').value.trim(),t=document.getElementById('up-t').value;
+  if(!n||!curClient)return;
+  var c=DB.clients.find(function(x){return x.id===curClient});
+  if(c){c.files.push({name:n,type:t,date:today()});renderDetail(c,'docs')}
+  hideM('m-up');document.getElementById('up-n').value='';
+}
+
+function addNote(){
+  var t=document.getElementById('no-t').value.trim(),ct=document.getElementById('no-c').value.trim();
+  if(!t||!curClient)return;
+  var c=DB.clients.find(function(x){return x.id===curClient});
+  if(c){c.notes.push({title:t,content:ct,date:today()});renderDetail(c,'notes')}
+  hideM('m-note');document.getElementById('no-t').value='';document.getElementById('no-c').value='';
+}
+
+function addEvent(){
+  var t=document.getElementById('ev-t').value.trim(),d=document.getElementById('ev-d').value;
+  if(!t||!d)return;
+  var cl=document.getElementById('ev-cl').value,ty=document.getElementById('ev-ty').value,n=document.getElementById('ev-n').value,h=document.getElementById('ev-h').value;
+  DB.events.push({id:'e'+Date.now(),agentId:CU.id,title:t,date:d,time:h,type:ty,clientId:cl,notes:n});
+  DB.activity.unshift({text:CU.name+' — Nouvel événement : '+t,date:today()});
+  hideM('m-ev');
+  ['ev-t','ev-d','ev-n'].forEach(function(x){document.getElementById(x).value=''});
+  document.getElementById('ev-h').value='09:00';
+  renderCal('ag-cal-wrap',CU.id,false);
+}
+
+function addDvLine(){
+  var id='dvl'+dvLineId++;
+  var div=document.createElement('div');
+  div.className='devis-line';div.id=id;
+  div.innerHTML='<input type="text" placeholder="Description de la prestation" oninput="calcDvTotal()"><input type="number" placeholder="1" min="1" value="1" style="text-align:center" oninput="calcDvTotal()"><input type="number" placeholder="0" min="0" step="0.01" value="0" style="text-align:right" oninput="calcDvTotal()"><div style="font-size:12px;font-weight:600;text-align:right;padding:8px 4px;white-space:nowrap">0,00€</div><button class="btn btn-danger btn-sm" style="padding:4px 6px" onclick="this.parentElement.remove();calcDvTotal()">×</button>';
+  document.getElementById('dv-lines').appendChild(div);
+  calcDvTotal();
+}
+
+function calcDvTotal(){
+  var total=0;
+  document.querySelectorAll('#dv-lines .devis-line').forEach(function(row){
+    var inputs=row.querySelectorAll('input');
+    var qty=parseFloat(inputs[1].value)||0,pu=parseFloat(inputs[2].value)||0;
+    var lt=qty*pu;total+=lt;
+    row.querySelector('div').textContent=lt.toLocaleString('fr-FR',{minimumFractionDigits:2})+'€';
+  });
+  document.getElementById('dv-total').textContent=total.toLocaleString('fr-FR',{minimumFractionDigits:2})+' €';
+}
+
+function saveDevis(){
+  var t=document.getElementById('dv-t').value.trim();
+  if(!t||!curClient)return;
+  var lines=[];
+  document.querySelectorAll('#dv-lines .devis-line').forEach(function(row){
+    var inp=row.querySelectorAll('input');
+    var desc=inp[0].value.trim(),qty=parseFloat(inp[1].value)||1,pu=parseFloat(inp[2].value)||0;
+    if(desc)lines.push({desc:desc,qty:qty,pu:pu});
+  });
+  var c=DB.clients.find(function(x){return x.id===curClient});
+  if(c){c.devis.push({id:'dv'+Date.now(),title:t,date:today(),status:'Brouillon',lines:lines});renderDetail(c,'devis')}
+  DB.activity.unshift({text:CU.name+' — Nouveau devis : '+t,date:today()});
+  hideM('m-dv');
+  document.getElementById('dv-t').value='';document.getElementById('dv-lines').innerHTML='';
+  document.getElementById('dv-total').textContent='0,00 €';dvLineId=0;
+}
+
+function createAgent(){
+  var n=document.getElementById('na-n').value.trim(),i=document.getElementById('na-i').value.trim(),p=document.getElementById('na-p').value.trim();
+  if(!n||!i||!p){alert('Veuillez remplir tous les champs.');return}
+  if(DB.users.find(function(u){return u.id===i})){alert('Cet identifiant existe déjà.');return}
+  DB.agents.push({id:i,name:n,login:i,active:true});
+  DB.users.push({id:i,pw:p,role:'agent',name:n});
+  DB.activity.unshift({text:'Nouvel agent créé : '+n+' ('+i+')',date:today()});
+  hideM('m-ag');['na-n','na-i','na-p'].forEach(function(x){document.getElementById(x).value=''});
+  renderAgTable();
+}
+
+function createClient(){
+  var f=document.getElementById('nc-f').value.trim(),l=document.getElementById('nc-l').value.trim();
+  if(!f||!l){alert('Le prénom et le nom sont obligatoires.');return}
+  var id='c'+Date.now();
+  DB.clients.push({id:id,agentId:CU.id,first:f,last:l,tel:document.getElementById('nc-t').value.trim(),email:document.getElementById('nc-e').value.trim(),addr:document.getElementById('nc-a').value.trim(),type:document.getElementById('nc-ty').value,status:'Prospect',files:[],notes:[],devis:[]});
+  DB.activity.unshift({text:CU.name+' a ajouté : '+f+' '+l,date:today()});
+  hideM('m-cl');['nc-f','nc-l','nc-t','nc-e','nc-a'].forEach(function(x){document.getElementById(x).value=''});
+  renderAgClients();
+}
+
+function evTypeLabel(t){return{rdv:'Rendez-vous',visite:'Visite',appel:'Appel',relance:'Relance',livraison:'Livraison'}[t]||t}
+function evTypeColor(t){return{rdv:'tag-blue',visite:'tag-green',appel:'tag-purple',relance:'tag-amber',livraison:'tag-teal'}[t]||'tag-blue'}
+function fmtDate(d){var p=d.split('-');return p[2]+'/'+p[1]}
+function today(){return new Date().toLocaleDateString('fr-FR')}
+
+function showM(id){
+  if(id==='m-ev'){
+    var sel=document.getElementById('ev-cl');
+    sel.innerHTML='<option value="">— Aucun —</option>';
+    DB.clients.filter(function(c){return c.agentId===CU.id}).forEach(function(c){
+      sel.innerHTML+='<option value="'+c.id+'">'+c.first+' '+c.last+'</option>';
+    });
+    document.getElementById('ev-d').value='2026-04-14';
+  }
+  if(id==='m-dv'&&!document.getElementById('dv-lines').children.length)addDvLine();
+  document.getElementById(id).classList.remove('hidden');
+}
+function hideM(id){document.getElementById(id).classList.add('hidden')}
+</script>
+</body>
+</html>
